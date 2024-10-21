@@ -2,7 +2,7 @@
 
 namespace Intercom;
 
-use Http\Client\Exception;
+use Exception;
 use stdClass;
 
 class IntercomConversations extends IntercomResource
@@ -21,6 +21,52 @@ class IntercomConversations extends IntercomResource
     }
 
     /**
+     * Updates a Conversation.
+     *
+     * @see    https://developers.intercom.com/docs/references/rest-api/api.intercom.io/conversations/updateconversation
+     * @param string $id
+     * @param array $options
+     * @return stdClass
+     */
+    public function updateConversation(string $id, array $options = [])
+    {
+        $path = $this->conversationPath($id);
+        return $this->client->put(
+            $path, $options);
+    }
+
+
+    /**
+     * Add tag to a conversation.
+     *
+     * @see    https://developers.intercom.com/docs/references/rest-api/api.intercom.io/conversations/attachtagtoconversation
+     * @param string $id
+     * @param array $options
+     * @return stdClass
+     */
+    public function addTagToConversation(string $id, array $options = [])
+    {
+        $path = $this->conversationTagsPath($id);
+        return $this->client->post(
+            $path, $options);
+    }
+
+    /**
+     * Remove tag to a conversation.
+     *
+     * @see    https://developers.intercom.com/docs/references/rest-api/api.intercom.io/conversations/detachtagfromconversation
+     * @param string $id
+     * @param string $tagId
+     * @param array $options
+     * @return stdClass
+     */
+    public function removeTagFromConversation(string $id, string $tagId, array $options = [])
+    {
+        $path = $this->conversationTagsDeletePath($id, $tagId);
+        return $this->client->delete($path, $options);
+    }
+
+    /**
      * Returns list of Conversations.
      *
      * @see    https://developers.intercom.io/reference#list-conversations
@@ -28,7 +74,7 @@ class IntercomConversations extends IntercomResource
      * @return stdClass
      * @throws Exception
      */
-    public function getConversations($options)
+    public function getConversations(array $options)
     {
         return $this->client->get('conversations', $options);
     }
@@ -42,7 +88,7 @@ class IntercomConversations extends IntercomResource
      * @return stdClass
      * @throws Exception
      */
-    public function getConversation($id, $options = [])
+    public function getConversation(string $id, array $options = [])
     {
         $path = $this->conversationPath($id);
         return $this->client->get($path, $options);
@@ -71,7 +117,7 @@ class IntercomConversations extends IntercomResource
      * @return stdClass
      * @throws Exception
      */
-    public function nextSearch(array $query, $pages)
+    public function nextSearch(array $query, stdClass $pages)
     {
         $path = 'conversations/search';
         return $this->client->nextSearchPage($path, $query, $pages);
@@ -86,7 +132,7 @@ class IntercomConversations extends IntercomResource
      * @return stdClass
      * @throws Exception
      */
-    public function replyToConversation($id, $options)
+    public function replyToConversation(string $id, array $options)
     {
         $path = $this->conversationReplyPath($id);
         return $this->client->post($path, $options);
@@ -100,7 +146,7 @@ class IntercomConversations extends IntercomResource
      * @return stdClass
      * @throws Exception
      */
-    public function replyToLastConversation($options)
+    public function replyToLastConversation(array $options)
     {
         $path = 'conversations/last/reply';
         return $this->client->post($path, $options);
@@ -114,7 +160,7 @@ class IntercomConversations extends IntercomResource
      * @return stdClass
      * @throws Exception
      */
-    public function markConversationAsRead($id)
+    public function markConversationAsRead(string $id)
     {
         $path = $this->conversationPath($id);
         $data = ['read' => true];
@@ -127,7 +173,7 @@ class IntercomConversations extends IntercomResource
      * @param  string $id
      * @return string
      */
-    public function conversationPath($id)
+    public function conversationPath(string $id): string
     {
         return 'conversations/' . $id;
     }
@@ -138,8 +184,31 @@ class IntercomConversations extends IntercomResource
      * @param  string $id
      * @return string
      */
-    public function conversationReplyPath($id)
+    public function conversationReplyPath(string $id): string
     {
         return 'conversations/' . $id . '/reply';
+    }
+
+    /**
+     * Returns endpoint path to Conversation Tags for Conversation with given ID.
+     *
+     * @param string $id
+     * @return string
+     */
+    public function conversationTagsPath(string $id): string
+    {
+        return 'conversations/' . $id . '/tags';
+    }
+
+    /**
+     * Returns endpoint path to Conversation Tags for Conversation with given ID and tag ID.
+     *
+     * @param string $id
+     * @param string $tagId
+     * @return string
+     */
+    public function conversationTagsDeletePath(string $id, string $tagId): string
+    {
+        return 'conversations/' . $id . '/tags/' . $tagId;
     }
 }

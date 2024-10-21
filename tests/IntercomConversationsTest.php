@@ -15,6 +15,32 @@ class IntercomConversationsTest extends TestCase
         $this->assertSame('foo', $conversations->create([]));
     }
 
+    public function testConversationUpdate()
+    {
+        $this->client->method('put')->willReturn('foo');
+
+        $conversations = new IntercomConversations($this->client);
+        $this->assertSame('foo', $conversations->updateConversation('', []));
+    }
+
+    public function testAddTagToConversation()
+    {
+        $this->client->method('post')->willReturn('foo');
+
+        $conversations = new IntercomConversations($this->client);
+        $this->assertSame('foo', $conversations->addTagToConversation('', []));
+    }
+
+
+    public function testRemoveTagFromConversation()
+    {
+        $this->client->method('delete')->willReturn('foo');
+
+        $conversations = new IntercomConversations($this->client);
+        $this->assertSame('foo', $conversations->removeTagFromConversation('1', '2'));
+    }
+
+
     public function testConversationsList()
     {
         $this->client->method('get')->willReturn('foo');
@@ -63,6 +89,19 @@ class IntercomConversationsTest extends TestCase
         $users = new IntercomConversations($this->client);
         $this->assertSame('conversations/foo/reply', $users->conversationReplyPath("foo"));
     }
+
+    public function testConversationTagsPath()
+    {
+        $users = new IntercomConversations($this->client);
+        $this->assertSame('conversations/12345/tags', $users->conversationTagsPath("12345"));
+    }
+
+    public function testConversationTagsDeletePath()
+    {
+        $users = new IntercomConversations($this->client);
+        $this->assertSame('conversations/12345/tags/54321', $users->conversationTagsDeletePath("12345", "54321"));
+    }
+
 
     public function testReplyToConversation()
     {
