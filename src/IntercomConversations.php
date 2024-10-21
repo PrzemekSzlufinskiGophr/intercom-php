@@ -2,7 +2,7 @@
 
 namespace Intercom;
 
-use Exception;
+use Http\Client\Exception;
 use stdClass;
 
 class IntercomConversations extends IntercomResource
